@@ -1,0 +1,14 @@
+{
+   "vi_VN": {
+      "wrongCommand": "Sai cú pháp, sử dụng:\n{0}pls sound || meme || slap <@mention> || neko [hug/kiss/tag]\nCác tag có trong pls neko:\nfemdom, tickle, classic, ngif, erofeet, meow, erok, poke, les, hololewd, lewdk, keta, feetg, eroyuri, kiss, 8ball, kuni, tits, pussy2, cum2, pussy, lewdkemo, lizard, hug, pat, bj, woof, yuri, trap, anal, baka, blowjob, holoero, feed, neko, gasm, hentai, futanari, ero, solo, waifu, pwankg, eron, erokemo",
+      "nsfw": "Từ từ nào, đó là bài viết NSFW",
+      "meme": "{0}\n\n {1} tại r/{2}",
+      "slapWrong": "Sai cú pháp, sử dụng: {0}pls slap <@mentions>"
+   },
+   "en_US": {
+      "wrongCommand": "Wrong command, using: {0}pls sound || neko [hug/kiss] || meme || slap <@mention>",
+      "nsfw": "Hold up! That is a NSFW post",
+      "meme": "{0}\n\n {1} at r/{2}",
+      "slapWrong": "Using: {0}pls slap <@mentions>"
+   }
+}
