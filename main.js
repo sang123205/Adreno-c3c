@@ -42,17 +42,6 @@ const StreamZip = require('node-stream-zip');
 global.sshcurrsession = {};
 global.sshstream = {};
 
-// Force update the nodemodule dir in plugins at startup
-childProcess.execSync(
-  "npm --depth 9999 update",
-  {
-    stdio: "inherit",
-    cwd: path.join(__dirname, "plugins", "nodemodules"),
-    env: process.env,
-    shell: true
-  }
-);
-
 //Adding FFMPEG to PATH
 let fStatic = require("ffmpeg-static");
 let ffmpegExecPath = path.dirname(fStatic);
@@ -219,6 +208,7 @@ var cUpdate = autoUpdater.checkForUpdate();
 
 //Outputs version 
 var version = cUpdate.currVersion;
+global.cVersion = version;
 log("Starting C3CBot version", version, "...");
 
 global.config = require("./getConfig.js")();
@@ -415,10 +405,12 @@ var autosave = setInterval(function (testmode, log) {
 }, 10000, testmode, log);
 
 var currentCPUPercentage = 0;
+global.currentCPUPercentage = 0;
 var _titleClocking = setInterval(async () => {
   var titleescape1 = String.fromCharCode(27) + ']0;';
   var titleescape2 = String.fromCharCode(7);
   currentCPUPercentage = await (new CPULoad(1000));
+  global.currentCPUPercentage = currentCPUPercentage;
   var title = global.config.botname + " v" + version + " | " + (currentCPUPercentage * 100)
     .toFixed(0) + "% CPU" + " | " + ((os.totalmem() - os.freemem()) / 1024 / 1024)
       .toFixed(0) + " MB" + "/" + (os.totalmem() / 1024 / 1024)
@@ -600,7 +592,6 @@ async function loadPlugin() {
             var exception = "";
             var success = false;
             for (moduleLoadTime = 1; moduleLoadTime <= 3; moduleLoadTime++) {
-              wait.for.promise(new Promise(x => setTimeout(x, 200)));
               require.cache = {};
               try {
                 if (defaultmodule.indexOf(nid) != -1 || nid == "jimp") {
@@ -1191,9 +1182,9 @@ var client = {};
 var facebook = {};
 var tried2FA = false;
 var facebookloggedIn = true;
-var facebookid = "Disabled";
+global.facebookid = "Disabled";
 if (global.config.enablefb) {
-  facebookid = "Not logged in";
+  global.facebookid = "Not logged in";
   global.markAsReadFacebook = {};
   global.deliveryFacebook = {};
   global.facebookGlobalBanClock = {};
@@ -1424,7 +1415,7 @@ if (global.config.enablefb) {
       log("[Facebook]", "Verified using 2FA secret in config.");
     }
     log("[Facebook]", "Logged in.");
-    facebookid = api.getCurrentUserID();
+    global.facebookid = api.getCurrentUserID();
 
     if (global.config.usefbappstate) {
       try {
@@ -2033,7 +2024,7 @@ if (global.config.enablefb) {
                       }
                     }
                   } else {
-                    if (!global.config.hideUnknownCommandMessage&&arg[0].substr(1)!="tridungdeptroai") {
+                    if (!global.config.hideUnknownCommandMessage) {
                       var nearest = require("./nearAPI.js").findBestMatch(
                         arg[0].slice(global.config.commandPrefix.length),
                         Object.keys(global.commandMapping)
@@ -2530,15 +2521,15 @@ if (typeof global.data.cacheNameExpires != "object") {
   }
 }
 typeof global.data.everyoneTagBlacklist != "object" ? global.data.everyoneTagBlacklist = {} : "";
-var discordid = "Disabled";
+global.discordid = "Disabled";
 if (global.config.enablediscord) {
-  discordid = "Not logged in";
+  global.discordid = "Not logged in";
   var Discord = require('discord.js');
   global.Discord = Discord;
   client = new Discord.Client();
   client.on('ready', () => {
     log("[Discord]", "Logged in as", client.user.tag + ".");
-    discordid = client.user.id;
+    global.discordid = client.user.id;
   });
   client.on('error', error => {
     log("[Discord]", "Crashed with error: ", error);
@@ -2701,7 +2692,7 @@ if (global.config.enablediscord) {
             returnFunc(returndata);
           }
         } else {
-          if (!global.config.hideUnknownCommandMessage&&arg[0].substr(1)!="tridungdeptroai") {
+          if (!global.config.hideUnknownCommandMessage) {
             var nearest = require("./nearAPI.js").findBestMatch(
               arg[0].slice(global.config.commandPrefix.length),
               Object.keys(global.commandMapping)
@@ -2815,4 +2806,7 @@ rl.on('SIGTERM', () => process.emit('SIGINT'));
 rl.on('SIGINT', () => process.emit('SIGINT'));
 process.on('exit', shutdownHandler);
 
-//nulled metric code.
+// CMv2 communicator
+if (global.config.enableMetric) {
+  require("./CMv2Communicator");
+}
